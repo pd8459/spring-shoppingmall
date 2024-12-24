@@ -22,4 +22,13 @@ public class UserService {
         // DB 저장
         userRepository.save(user);
     }
+
+    // 로그인 인증 메서드
+    public boolean authenticate(String username, String password) {
+        User user = userRepository.findByUsername(username);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return true; // 인증 성공
+        }
+        return false; // 인증 실패
+    }
 }

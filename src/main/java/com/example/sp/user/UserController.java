@@ -16,14 +16,12 @@ public class UserController {
 
     private final UserService userService;
 
-    // 사용자 등록 폼 화면
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         return "user/register";
     }
 
-    // 사용자 등록 처리
     @PostMapping("/register")
     public String registerUser(@Valid User user, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
@@ -39,10 +37,26 @@ public class UserController {
             return "user/register";
         }
     }
-
-    // 로그인 화면 렌더링
+    // 로그인 폼 반환
     @GetMapping("/login")
     public String showLoginForm() {
-        return "user/login";
+        return "user/login"; // user/login.html 반환
     }
+
+    @PostMapping("/login")
+    public String loginUser(@Valid User user, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "user/login"; // 입력 검증 실패 시 다시 로그인 페이지 반환
+        }
+
+        // 로그인 성공 처리
+        if (userService.authenticate(user.getUsername(), user.getPassword())) {
+            return "redirect:/"; // 메인 페이지로 리다이렉트
+        } else {
+            model.addAttribute("errorMessage", "Invalid username or password.");
+            return "user/login"; // 로그인 실패 시 다시 로그인 페이지 반환
+        }
+    }
+
+
 }
